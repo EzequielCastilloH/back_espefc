@@ -78,7 +78,7 @@ router.post('/updateCar', CarController.updateCar);
 //Cars Videos
 router.post('/createCarVideo', CarVideoController.createCarVideo);
 router.get('/getCarVideos', CarVideoController.getCarVideos);
-router.post('/getCarVideoById', CarVideoController.getCarVideoById);
+router.post('/getCarVideoByBrand', CarVideoController.getCarVideoByBrand);
 router.post('/updateCarVideo', CarVideoController.updateCarVideo);
 
 //Education

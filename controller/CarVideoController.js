@@ -31,10 +31,10 @@ async function getCarVideos(req, res) {
     }
 }
 
-async function getCarVideoById(req, res) {
+async function getCarVideoByBrand(req, res) {
     try {
-        const { car_video_id } = req.body;
-        const car_videos = await CarVideo.findOne({ where: { car_video_id: car_video_id } });
+        const { car_video_brand } = req.body;
+        const car_videos = await CarVideo.findAll({ where: { car_video_brand: car_video_brand } });
         res.status(200).json({ car_videos });
     } catch (error) {
         console.error(error);
@@ -44,20 +44,20 @@ async function getCarVideoById(req, res) {
 
 async function updateCarVideo(req, res) {
     try {
-        const { car_video_id, car_video_name, car_video_year, car_video_km, car_video_price, car_video_href, brand_id } = req.body;
+        const { car_video_id, car_videoId, car_video_name, car_video_year, car_video_km, car_video_price, car_video_href, car_video_brand } = req.body;
 
         const car_videos = await CarVideo.findOne({ where: { car_video_id: car_video_id } });
 
         if (!car_videos) {
             return res.status(404).json({ message: 'Carro no encontrado' });
         }
-
+        car_videoId.car_videoId = car_videoId;
         car_videos.car_video_name = car_video_name;
         car_videos.car_video_year = car_video_year;
         car_videos.car_video_km = car_video_km;
         car_videos.car_video_price = car_video_price;
         car_videos.car_video_href = car_video_href;
-        car_videos.brand_id = brand_id;
+        car_videos.car_video_brand = car_video_brand;
 
         await car_videos.save();
 
@@ -68,4 +68,4 @@ async function updateCarVideo(req, res) {
     }
 }
 
-module.exports = { createCarVideo, getCarVideos, getCarVideoById, updateCarVideo };
+module.exports = { createCarVideo, getCarVideos, getCarVideoByBrand, updateCarVideo };
