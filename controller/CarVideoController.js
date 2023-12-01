@@ -2,7 +2,7 @@ const CarVideo = require('../model/CarVideo');
 
 async function createCarVideo(req, res) {
     try {
-        const { car_videoId, car_video_name, car_video_year, car_video_km, car_video_price, car_video_href, brand_id } = req.body;
+        const { car_videoId, car_video_name, car_video_year, car_video_km, car_video_price, car_video_href, car_video_brand } = req.body;
 
         await CarVideo.create({
             car_videoId,
@@ -11,7 +11,7 @@ async function createCarVideo(req, res) {
             car_video_km,
             car_video_price,
             car_video_href,
-            brand_id
+            car_video_brand
         });
 
         res.status(201).json({ message: 'Carro guardado', success: true });
