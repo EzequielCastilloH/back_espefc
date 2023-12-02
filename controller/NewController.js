@@ -13,17 +13,17 @@ async function createNew(req, res) {
         res.status(201).json({ message: 'Noticia guardado', success: true });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al guardar la Noticia' });
+        res.status(500).json({ success: false, message: 'Error al guardar la Noticia' });
     }
 }
 
 async function getNews(req, res) {
     try {
         const news = await New.findAll();
-        res.status(200).json({ news });
+        res.status(200).json({ success: true, news });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al obtener las Noticias' });
+        res.status(500).json({ success: false, message: 'Error al obtener las Noticias' });
     }
 }
 
@@ -31,10 +31,10 @@ async function getNewById(req, res) {
     try {
         const { new_id } = req.body;
         const news = await New.findOne({ where: { new_id: new_id } });
-        res.status(200).json({ news });
+        res.status(200).json({ success: true, news });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al obtener la Noticia' });
+        res.status(500).json({ success: false, message: 'Error al obtener la Noticia' });
     }
 }
 
@@ -45,7 +45,7 @@ async function updateNew(req, res) {
         const news = await New.findOne({ where: { new_id: new_id } });
 
         if (!news) {
-            return res.status(404).json({ message: 'Noticia no encontrado' });
+            return res.status(404).json({ success: false, message: 'Noticia no encontrado' });
         }
 
         news.new_title = new_title;
@@ -57,7 +57,7 @@ async function updateNew(req, res) {
         res.status(201).json({ message: 'Noticia actualizada', success: true });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al actualizar la Noticia' });
+        res.status(500).json({ success: false, message: 'Error al actualizar la Noticia' });
     }
 }
 

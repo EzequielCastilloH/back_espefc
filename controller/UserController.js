@@ -82,7 +82,7 @@ async function getUserById(req, res){
 
         res.status(200).json({ success: true, user: user });
     }catch(error){
-        console.error('Error al obtener el usuario ' + error);
+        res.status(500).json({ success: false, message: 'Error al obtener el usuario '+ error });
     }
 }
 
@@ -144,7 +144,7 @@ async function setUserAvalible(req, res){
 
         res.status(200).json({ success: true, customer: user, message: 'Usuario habilitado'});
     }catch(error){
-        console.error('Error al habilitar el usuario ' + error);
+        res.status(500).json({ success: false, message: 'Error al habilitar el usuario '+ error });
     }
 }
 
@@ -162,7 +162,7 @@ async function setUserDisable(req, res){
 
         res.status(200).json({ success: true, customer: user, message: 'Usuario deshabilitado' });
     }catch(error){
-        console.error('Error al habilitar el usuario ' + error);
+        res.status(500).json({ success: false, message: 'Error al deshabilitar el usuario '+ error });
     }
 }
 
@@ -221,7 +221,7 @@ async function changePassword(req, res){
             res.status(404).json({ success: false, message: 'Contraseña inválida' });
         }
     }catch(error){
-        console.error('Error al cambiar la contraseña ' + error);
+        res.status(500).json({ success: false, message: 'Error al cambiar la contraseña '+ error });
     }
 }
 
@@ -261,7 +261,6 @@ async function editUser(req, res){
         return res.status(200).json({ success: true, customer: user, message: 'Usuario actualizado' });
 
     }catch(error){
-        console.error('Error al editar el usuario ' + error);
         return res.status(500).json({ success: false, message: 'Error al editar el usuario. '+ error });
     }
 }
@@ -286,7 +285,6 @@ async function sendSuggestion(req, res){
         return res.status(200).json({ success: true, message: 'Sugerencia enviada' });
 
     }catch(error){
-        console.error('Error al enviar sugerencia ' + error);
         return res.status(500).json({ success: false, message: 'Error al enviar sugerencia. '+ error });
     }
 }
@@ -296,7 +294,7 @@ async function isUserAlreadyExist(user_ci){
         const user = await User.findOne({ where: { user_ci: user_ci } });
         return !!user;
     }catch(error){
-        console.error('Error al verificar el usuario ' + error);
+        res.status(500).json({ success: false, message: 'Error al verificar el usuario '+ error });
     }
 }
 

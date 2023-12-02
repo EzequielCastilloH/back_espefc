@@ -30,17 +30,17 @@ async function createLoan(req, res) {
         res.status(201).json({ message: 'Loan guardado', success: true });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al guardar el Loan' });
+        res.status(500).json({ success: false, message: 'Error al guardar el Loan' });
     }
 }
 
 async function getLoans(req, res) {
     try {
         const loans = await Loan.findAll();
-        res.status(200).json({ loans });
+        res.status(200).json({ success: true, loans });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al obtener los Loans' });
+        res.status(500).json({ success: false, message: 'Error al obtener los Loans' });
     }
 }
 
@@ -48,10 +48,10 @@ async function getLoansByUser(req, res) {
     try {
         const { user_id } = req.body;
         const loans = await Loan.findAll({ where: { user_id: user_id } });
-        res.status(200).json({ loans });
+        res.status(200).json({ success: true, loans });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al obtener los Loans' });
+        res.status(500).json({ success: false, message: 'Error al obtener los Loans' });
     }
 }
 
@@ -107,7 +107,7 @@ async function changeLoanState(req, res) {
         res.status(201).json({ message: 'Loan actualizado', success: true });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al actualizar el Loan' });
+        res.status(500).json({ success: false, message: 'Error al actualizar el Loan' });
     }
 }
 

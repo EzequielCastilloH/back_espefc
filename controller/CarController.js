@@ -13,17 +13,17 @@ async function createCar(req, res) {
         res.status(201).json({ message: 'Carro guardado', success: true });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al guardar el carro' });
+        res.status(500).json({ success: false, message: 'Error al guardar el carro' });
     }
 }
 
 async function getCars(req, res) {
     try {
         const cars = await Car.findAll();
-        res.status(200).json({ cars });
+        res.status(200).json({ success: true, cars });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al obtener las Carro' });
+        res.status(500).json({ success: false, message: 'Error al obtener las Carro' });
     }
 }
 
@@ -31,10 +31,10 @@ async function getCarById(req, res) {
     try {
         const { car_id } = req.body;
         const cars = await Car.findOne({ where: { car_id: car_id } });
-        res.status(200).json({ cars });
+        res.status(200).json({ success: true, cars });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al obtener el carro' });
+        res.status(500).json({ success: false, message: 'Error al obtener el carro' });
     }
 }
 
@@ -57,7 +57,7 @@ async function updateCar(req, res) {
         res.status(201).json({ message: 'Carro actualizado', success: true });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Error al actualizar el carro' });
+        res.status(500).json({ success: false, message: 'Error al actualizar el carro' });
     }
 }
 
