@@ -139,6 +139,17 @@ async function setUserAvalible(req, res){
             return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
         }
 
+        const customer = await Customer.findOne({ where: { customer_id: user_id } });
+        await transporter.sendMail({
+            from: '"Aprobación de cuenta - Fondo de Cesantía ESPE" <pruebafondoespe@gmail.com>', 
+            to: decrypt(customer.customer_personal_email) + ", " + decrypt(customer.customer_espe_email), 
+            subject: "Aprobación de cuenta - Fondo de Cesantía ESPE",
+            html: `
+            <b> Felicitaciones, ahora eres parte oficialmente del Fondo de Cesantía ESPE </b>
+            <br><br>
+            <p>Ingresa a nuestra plataforma y revisa las diferentes funcionalidades disponibles para ti </p>
+            `
+        });
         user.user_state = 1;
         await user.save();
 
@@ -156,6 +167,17 @@ async function setUserDisable(req, res){
         if(!user){
             return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
         }
+        const customer = await Customer.findOne({ where: { customer_id: user_id } });
+        await transporter.sendMail({
+            from: '"Desactivación de cuenta - Fondo de Cesantía ESPE" <pruebafondoespe@gmail.com>', 
+            to: decrypt(customer.customer_personal_email) + ", " + decrypt(customer.customer_espe_email), 
+            subject: "Cuenta desactivada - Fondo de Cesantía ESPE",
+            html: `
+            <b> Tu cuenta ha sido desactivada. Lamentamos que ya no formes parte del Fondo de Cesantía ESPE </b>
+            <br><br>
+            <p>Si tienes alguna duda, por favor contacta con cualquiera de nuestros trabajadores</p>
+            `
+        });
 
         user.user_state = 0;
         await user.save();
@@ -271,7 +293,7 @@ async function sendSuggestion(req, res){
 
         await transporter.sendMail({
             from: '"Sugerencia - Fondo de Cesantía ESPE" <pruebafondoespe@gmail.com>',
-            to: "fondoespe@espe.edu.ec",
+            to: "jnmolina@espe.edu.ec",
             subject: "Sugerencia - Fondo de Cesantía ESPE",
             html: `
             <br><br>

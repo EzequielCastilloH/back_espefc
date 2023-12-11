@@ -78,7 +78,7 @@ async function changeLoanState(req, res) {
                 to: decrypt(customer.customer_personal_email) + ", " + decrypt(customer.customer_espe_email),
                 subject: "Aviso de Préstamo - Fondo de Cesantía ESPE",
                 html: `
-                <b> Tu préstamos fue aceptado por el Fondo de Cesantía ESPE.</b>
+                <b> Tu préstamo fue aceptado por el Fondo de Cesantía ESPE.</b>
                 <a> El préstamo ${loan.loan_type} de $${loan.loan_amount} fue aprobado.</a>
                 <br><br>
                 <a> Recuerda que tu préstamo es de ${loan.loan_deadline} meses.</a>
@@ -90,17 +90,17 @@ async function changeLoanState(req, res) {
 
             const { user_id } = loan;
             
-            const customer = await Customer.findOne({ where: { user_id: user_id } });
+            const customer = await Customer.findOne({ where: { customer_id: user_id } });
 
             await transporter.sendMail({
                 from: '"Fondo de Cesantía ESPE" <pruebafondoespe@gmail.com>',
-                to: customer.customer_personal_email + ", " + customer.customer_espe_email,
+                to: decrypt(customer.customer_personal_email) + ", " + decrypt(customer.customer_espe_email),
                 subject: "Aviso de Préstamo - Fondo de Cesantía ESPE",
                 html: `
-                <b> Tu préstamos fue aceptado por el Fondo de Cesantía ESPE.</b>
-                <a> El préstamo ${loan.loan_type} de $${loan.loan_amount} fue aprobado.</a>
+                <b> Tu préstamo fue denegado por el Fondo de Cesantía ESPE.</b>
+                <a> El préstamo ${loan.loan_type} de $${loan.loan_amount} fue denegado.</a>
                 <br><br>
-                <a> Recuerda que tu préstamo es de ${loan.loan_deadline} meses.</a>
+                <a> Acércate a nuestras oficinas si deseas más información.</a>
                 `
             });
         }

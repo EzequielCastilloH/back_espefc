@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const router = express.Router();
 const multer = require('multer');
+const path = require('path');
+const fs = require('fs').promises;
+const transporter = require('../utils/mailer');
 const userController = require('../controller/UserController');
 const QuestionController = require('../controller/QuestionController');
 const LoanController = require('../controller/LoanController');
@@ -13,24 +16,44 @@ const EducationController = require('../controller/EducationController');
 
 router.use(cors());
 
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'temp/'); 
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now() + path.extname(file.originalname));
+  },
+});
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 1024 * 1024 * 5 }, // Limitar el tamaño a 5 MB por archivo
+  fileFilter: function (req, file, cb) {
+    const ext = path.extname(file.originalname);
+    if (ext !== '.pdf') {
+      return cb(new Error('Solo se permiten archivos PDF'));
+    }
+    cb(null, true);
+  },
+})
 
-router.post('/uploadPdf', upload.array('pdfs', 5), async (req, res) => {
-    try {
+router.post('/uploadPdf', upload.array('pdfs', 13), async (req, res) => {
+  console.log(req.files);  
+  try {
+      
       const mailOptions = {
         from: 'pruebafondoespe@gmail.com',
-        to: 'fondoespe@espe.edu.ec',
+        to: 'jnmolina@espe.edu.ec',
         subject: 'Proceso de solicitud de préstamo',
         text: 'Este correo es para notificar que un usuario ha solicitado un préstamo y ha adjuntado los siguientes documentos:',
         attachments: req.files.map(file => ({
           filename: file.originalname,
-          content: file.buffer,
+          path: file.path,
         })),
       };
   
       await transporter.sendMail(mailOptions);
       console.log('Correo enviado correctamente');
+      await Promise.all(req.files.map((file) => fs.unlink(file.path)));
       res.status(200).send('Correo enviado correctamente');
     } catch (error) {
       console.error('Error al enviar el correo', error);
