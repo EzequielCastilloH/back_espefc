@@ -19,6 +19,7 @@ const Loan = sequelize.define('loans', {
         allowNull: false,
         defaultValue: 'Pendiente',
     },
+    loan_initial_amount: DataTypes.FLOAT,
     loan_guarantors: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
