@@ -11,6 +11,7 @@ async function createLoan(req, res) {
             loan_type,
             loan_amount,
             loan_deadline,
+            loan_initial_amount,
             loan_amortization_type,
             loan_guarantors,
         } = req.body;
@@ -23,6 +24,7 @@ async function createLoan(req, res) {
             loan_type,
             loan_amount,
             loan_deadline,
+            loan_initial_amount,
             loan_amortization_type,
             loan_guarantors,
         });
