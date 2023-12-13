@@ -311,6 +311,30 @@ async function sendSuggestion(req, res){
     }
 }
 
+async function updateBalance(req, res){
+    try {
+        const { balance_json } = req.body;
+        const balanceToUpdate = balance_json;
+
+        if(!balanceToUpdate){
+            return res.status(404).json({ success: false, message: 'No se encontró el saldo a actualizar' });
+        }
+
+        for(let i = 0; i < balanceToUpdate.length; i++){
+
+            const user = await User.findOne({ where: { user_ci: balanceToUpdate[i].user_ci } });
+            if(user){
+                user.user_balance = balanceToUpdate[i].user_balance;
+                await user.save();
+            }
+        }
+
+        return res.status(200).json({ success: true, message: 'Saldos actualizados' });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Error al actualizar el saldo. '+ error });
+    }
+}
+
 async function isUserAlreadyExist(user_ci){
     try{
         const user = await User.findOne({ where: { user_ci: user_ci } });
@@ -330,4 +354,4 @@ function generateSixDigitCode() {
     return formattedCode;
 }
 
-module.exports = { createUserWithCustomer, getPendingUsers, setUserAvalible, setUserDisable, loginUser, editUser, changePassword, getApprovedUsers, sendSuggestion, getUserById };
+module.exports = { createUserWithCustomer, getPendingUsers, setUserAvalible, setUserDisable, loginUser, editUser, changePassword, getApprovedUsers, sendSuggestion, getUserById, updateBalance };

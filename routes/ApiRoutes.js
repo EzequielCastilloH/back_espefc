@@ -13,6 +13,7 @@ const NewController = require('../controller/NewController');
 const CarController = require('../controller/CarController');
 const CarVideoController = require('../controller/CarVideoController');
 const EducationController = require('../controller/EducationController');
+const DeductibleController = require('../controller/DeductibleController');
 
 router.use(cors());
 
@@ -72,6 +73,7 @@ router.post('/changePassword', userController.changePassword);
 router.get('/getApprovedUsers', userController.getApprovedUsers);
 router.post('/sendSuggestion', userController.sendSuggestion);
 router.post('/getUserById', userController.getUserById);
+router.post('/updateBalance', userController.updateBalance);
 
 //Questions
 router.get('/questions', QuestionController.getAllQuestions);
@@ -109,5 +111,10 @@ router.post('/createEducation', EducationController.createEducation);
 router.get('/getEducations', EducationController.getEducations);
 router.post('/getEducationById', EducationController.getEducationById);
 router.post('/updateEducation', EducationController.updateEducation);
+
+//Deductibles
+router.get('/deductibles', DeductibleController.getDeductibles);
+router.post('/editDeductible', DeductibleController.editDeductible);
+router.post('/createDeductible', DeductibleController.createDeductible);
 
 module.exports = router;
