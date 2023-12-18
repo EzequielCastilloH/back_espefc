@@ -102,7 +102,7 @@ async function getApprovedUsers(req, res){
             createdAt: customer.createdAt,
             updatedAt: customer.updatedAt,
         }));
-        res.json(decryptedCustomers);
+        res.status(200).json({success: true, customers: decryptedCustomers, users: users});
     }catch(error){
         res.status(500).json({ success: false, message: 'Error al cargar el usuario y cliente. '+ error });
     }
@@ -124,7 +124,7 @@ async function getPendingUsers(req, res){
             createdAt: customer.createdAt,
             updatedAt: customer.updatedAt,
         }));
-        res.json(decryptedCustomers);
+        res.status(200).json({success: true, customers: decryptedCustomers, users: users});
     }catch(error){
         res.status(500).json({ success: false, message: 'Error al cargar el usuario y cliente. '+ error });
     }
@@ -311,7 +311,28 @@ async function sendSuggestion(req, res){
     }
 }
 
-async function updateBalance(req, res){
+async function editBalanceManually(req, res){
+    try{
+        const { user_id, user_balance } = req.body;
+
+        const user = await User.findOne({ where: { user_id: user_id } });
+        
+        if(!user){
+            return res.status(404).json({ success: false, message: 'Usuario no encontrado' });
+        }
+
+        user.user_balance = user_balance;
+
+        await user.save();
+
+        return res.status(200).json({ success: true, message: 'Saldo actualizado' });
+    
+    }catch(error){
+        return res.status(500).json({ success: false, message: 'Error al editar el saldo. '+ error });
+    }
+}
+
+async function updateBalanceAuto(req, res){
     try {
         const { balance_json } = req.body;
         const balanceToUpdate = balance_json;
@@ -345,13 +366,12 @@ async function isUserAlreadyExist(user_ci){
 }
 
 function generateSixDigitCode() {
-    // Generar un número aleatorio de 6 dígitos
     const randomCode = crypto.randomBytes(3).readUIntBE(0, 3) % 1000000;
 
-    // Formatear el código para asegurar que tenga siempre 6 dígitos
     const formattedCode = String(randomCode).padStart(6, '0');
 
     return formattedCode;
 }
 
-module.exports = { createUserWithCustomer, getPendingUsers, setUserAvalible, setUserDisable, loginUser, editUser, changePassword, getApprovedUsers, sendSuggestion, getUserById, updateBalance };
+module.exports = { createUserWithCustomer, getPendingUsers, setUserAvalible, setUserDisable, loginUser, editUser, 
+    changePassword, getApprovedUsers, sendSuggestion, getUserById, updateBalanceAuto, editBalanceManually };

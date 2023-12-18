@@ -8,6 +8,7 @@ const Deductible = sequelize.define('deductibles', {
         autoIncrement: true
     },
     deductible_number: DataTypes.FLOAT,
+    deductible_type: DataTypes.STRING,
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
 });

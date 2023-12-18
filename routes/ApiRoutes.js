@@ -73,7 +73,8 @@ router.post('/changePassword', userController.changePassword);
 router.get('/getApprovedUsers', userController.getApprovedUsers);
 router.post('/sendSuggestion', userController.sendSuggestion);
 router.post('/getUserById', userController.getUserById);
-router.post('/updateBalance', userController.updateBalance);
+router.post('/updateBalance', userController.updateBalanceAuto);
+router.post('/editBalanceManual', userController.editBalanceManually);
 
 //Questions
 router.get('/questions', QuestionController.getAllQuestions);
@@ -114,7 +115,7 @@ router.post('/updateEducation', EducationController.updateEducation);
 
 //Deductibles
 router.get('/deductibles', DeductibleController.getDeductibles);
-router.post('/editDeductible', DeductibleController.editDeductible);
+router.post('/editDeductible', DeductibleController.editDeductibleByType);
 router.post('/createDeductible', DeductibleController.createDeductible);
 
 module.exports = router;

@@ -9,11 +9,11 @@ async function getDeductibles(req, res) {
     }
 }
 
-async function editDeductible(req, res) {
+async function editDeductibleByType(req, res) {
     try {
-        const { deductible_id, deductible_number } = req.body;
+        const { deductible_number, deductible_type } = req.body;
 
-        const deductible = await Deductible.findOne({ where: { deductible_id: deductible_id } });
+        const deductible = await Deductible.findOne({ where: { deductible_type: deductible_type } });
 
         if (!deductible) {
             return res.status(404).json({ message: 'Deducible no encontrado' });
@@ -30,10 +30,11 @@ async function editDeductible(req, res) {
 
 async function createDeductible(req, res) {
     try {
-        const { deductible_number } = req.body;
+        const { deductible_number, deductible_type } = req.body;
 
         const deductible = await Deductible.create({
-            deductible_number
+            deductible_number,
+            deductible_type
         });
 
         res.status(200).json({ success: true, message: 'Deducible creado' });
@@ -42,4 +43,4 @@ async function createDeductible(req, res) {
     }
 }
 
-module.exports = { getDeductibles, editDeductible, createDeductible };
+module.exports = { getDeductibles, editDeductibleByType, createDeductible };
