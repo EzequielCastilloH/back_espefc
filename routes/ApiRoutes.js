@@ -88,6 +88,7 @@ router.post('/createLoan', LoanController.createLoan);
 router.get('/getLoans', LoanController.getLoans);
 router.post('/changeLoanState', LoanController.changeLoanState);
 router.post('/getLoansByUser', LoanController.getLoansByUser);
+router.post('/updateLoansAuto', LoanController.updateLoansAuto);
 
 //News
 router.post('/createNew', NewController.createNew);

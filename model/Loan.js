@@ -9,6 +9,7 @@ const Loan = sequelize.define('loans', {
         primaryKey: true,
         autoIncrement: true
     },
+    loan_num: DataTypes.STRING,
     loan_customer_name: DataTypes.STRING,
     loan_type: DataTypes.STRING,
     loan_amount: DataTypes.FLOAT,

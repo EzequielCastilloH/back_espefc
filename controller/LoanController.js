@@ -20,6 +20,7 @@ async function createLoan(req, res) {
         const loan_customer_name = customer.customer_name;
         await Loan.create({
             user_id,
+            loan_num: '',
             loan_customer_name,
             loan_type,
             loan_amount,
@@ -59,21 +60,22 @@ async function getLoansByUser(req, res) {
 
 async function changeLoanState(req, res) {
     try {
-        const { loan_id, loan_state } = req.body;
+        const { loan_id, loan_state, loan_num } = req.body;
 
-        const loan = await Loan.findOne({ where: { loan_id: loan_id } } );
-        
-        if(!loan){
+        const loan = await Loan.findOne({ where: { loan_id: loan_id } });
+
+        if (!loan) {
             return res.status(404).json({ message: 'Loan no encontrado' });
         }
-
-        loan.loan_state = loan_state;
-        await loan.save();
 
         if (loan_state === 'Aprobado') {
             const { user_id } = loan;
 
             const customer = await Customer.findOne({ where: { customer_id: user_id } });
+
+            loan.loan_num = loan_num;
+            loan.loan_state = loan_state;
+            await loan.save();
 
             await transporter.sendMail({
                 from: '"Fondo de Cesantía ESPE" <pruebafondoespe@gmail.com>',
@@ -87,12 +89,16 @@ async function changeLoanState(req, res) {
                 `
             });
 
-        }else if(loan_state === 'Rechazado'){
+        } else if (loan_state === 'Rechazado') {
             const loan = await Loan.findOne({ where: { loan_id: loan_id } });
 
             const { user_id } = loan;
-            
+
             const customer = await Customer.findOne({ where: { customer_id: user_id } });
+
+            loan.loan_num = loan_num;
+            loan.loan_state = loan_state;
+            await loan.save();
 
             await transporter.sendMail({
                 from: '"Fondo de Cesantía ESPE" <pruebafondoespe@gmail.com>',
@@ -113,4 +119,46 @@ async function changeLoanState(req, res) {
     }
 }
 
-module.exports = { createLoan, getLoans, changeLoanState, getLoansByUser };
+async function updateLoansAuto(req, res) {
+    try {
+        const { loan_json } = req.body;
+        const loansToUpdate = loan_json;
+
+        if (!loansToUpdate) {
+            return res.status(404).json({ message: 'Loans no encontrados' });
+        }
+
+        for (let i = 0; i < loansToUpdate.length; i++) {
+            const user = await User.findOne({ where: { user_ci: loansToUpdate[i].user_ci } });
+
+            if (user) {
+                const customer = await Customer.findOne({ where: { customer_id: user.user_id } });
+                const loan = await Loan.findOne({ where: { loan_num: loansToUpdate[i].loan_num } });
+
+                if (!loan) {
+                    Loan.create({
+                        user_id: user.user_id,
+                        loan_num: loansToUpdate[i].loan_num,
+                        loan_customer_name: customer.customer_name,
+                        loan_type: loansToUpdate[i].loan_type,
+                        loan_amount: loansToUpdate[i].loan_amount,
+                        loan_deadline: loansToUpdate[i].loan_deadline,
+                        loan_amortization_type: '',
+                        loan_state: 'Aprobado',
+                        loan_pending_amount: loansToUpdate[i].loan_pending_amount,
+                        loan_guarantors: '',
+                    });
+                }
+
+                loan.loan_pending_amount = loansToUpdate[i].loan_pending_amount;
+                await loan.save();
+            }
+        }
+        res.status(201).json({ message: 'Loans actualizados', success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Error al actualizar los Loans' });
+    }
+}
+
+module.exports = { createLoan, getLoans, changeLoanState, getLoansByUser, updateLoansAuto };
