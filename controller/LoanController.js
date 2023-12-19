@@ -147,6 +147,7 @@ async function updateLoansAuto(req, res) {
                         loan_state: 'Aprobado',
                         loan_pending_amount: loansToUpdate[i].loan_pending_amount,
                         loan_guarantors: '',
+                        createdAt: loansToUpdate[i].createdAt,
                     });
                 }
 
