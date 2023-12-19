@@ -154,7 +154,7 @@ async function updateLoansAuto(req, res) {
                 await loan.save();
             }
         }
-        res.status(201).json({ message: 'Loans actualizados', success: true });
+        res.status(201).json({ message: 'Préstamos actualizados', success: true });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Error al actualizar los Loans' });
