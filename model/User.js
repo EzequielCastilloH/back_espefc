@@ -31,6 +31,11 @@ const User = sequelize.define('users', {
         allowNull: false,
         defaultValue: 'usuario',
     },
+    user_first_time: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+    },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,
 });

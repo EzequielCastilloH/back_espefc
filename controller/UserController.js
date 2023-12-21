@@ -356,6 +356,20 @@ async function updateBalanceAuto(req, res){
     }
 }
 
+async function updateFirstTime(req, res){
+    try {
+        const { user_ci } = req.body;
+        const user = await User.findOne({ where: { user_ci: user_ci } });
+        if(user){
+            user.user_first_time = false;
+            await user.save();
+        }
+        return res.status(200).json({ success: true, message: 'Primera vez actualizada' });
+    } catch (error) {
+        return res.status(500).json({ success: false, message: 'Error al actualizar primera vez. '+ error });        
+    }
+}
+
 async function isUserAlreadyExist(user_ci){
     try{
         const user = await User.findOne({ where: { user_ci: user_ci } });
@@ -374,4 +388,4 @@ function generateSixDigitCode() {
 }
 
 module.exports = { createUserWithCustomer, getPendingUsers, setUserAvalible, setUserDisable, loginUser, editUser, 
-    changePassword, getApprovedUsers, sendSuggestion, getUserById, updateBalanceAuto, editBalanceManually };
+    changePassword, getApprovedUsers, sendSuggestion, getUserById, updateBalanceAuto, editBalanceManually, updateFirstTime };
