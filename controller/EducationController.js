@@ -2,7 +2,20 @@ const Education = require('../model/education');
 
 async function createEducation(req, res) {
     try {
-        const { education_videoId } = req.body;
+        const { education_videoId, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
 
         await Education.create({
             education_videoId
@@ -27,7 +40,20 @@ async function getEducations(req, res) {
 
 async function getEducationById(req, res) {
     try {
-        const { education_id } = req.body;
+        const { education_id, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const educations = await Education.findOne({ where: { education_id: education_id } });
         res.status(200).json({ success: true, educations });
     } catch (error) {
@@ -38,7 +64,20 @@ async function getEducationById(req, res) {
 
 async function updateEducation(req, res) {
     try {
-        const { education_id, education_videoId } = req.body;
+        const { education_id, education_videoId, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
 
         const educations = await Education.findOne({ where: { education_id: education_id } });
 

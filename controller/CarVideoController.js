@@ -2,8 +2,21 @@ const CarVideo = require('../model/CarVideo');
 
 async function createCarVideo(req, res) {
     try {
-        const { car_videoId, car_video_name, car_video_year, car_video_km, car_video_price, car_video_href, car_video_brand } = req.body;
+        const { car_videoId, car_video_name, car_video_year, car_video_km, car_video_price, car_video_href, car_video_brand, authorization } = req.body;
 
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         await CarVideo.create({
             car_videoId,
             car_video_name,
@@ -33,7 +46,6 @@ async function getCarVideos(req, res) {
 
 async function getCarVideoByBrand(req, res) {
     try {
-        const { car_video_brand } = req.body;
         const car_videos = await CarVideo.findAll({ where: { car_video_brand: car_video_brand } });
         res.status(200).json({ success: true, car_videos });
     } catch (error) {
@@ -44,7 +56,20 @@ async function getCarVideoByBrand(req, res) {
 
 async function updateCarVideo(req, res) {
     try {
-        const { car_video_id, car_videoId, car_video_name, car_video_year, car_video_km, car_video_price, car_video_href, car_video_brand } = req.body;
+        const { car_video_id, car_videoId, car_video_name, car_video_year, car_video_km, car_video_price, car_video_href, car_video_brand, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
 
         const car_videos = await CarVideo.findOne({ where: { car_video_id: car_video_id } });
 

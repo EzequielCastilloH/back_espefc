@@ -65,13 +65,13 @@ router.post('/uploadPdf', upload.array('pdfs', 13), async (req, res) => {
 
 //User
 router.post('/createUser', userController.createUserWithCustomer);
-router.get('/pendingUsers', userController.getPendingUsers);
+router.post('/pendingUsers', userController.getPendingUsers);
 router.post('/avalibleUser', userController.setUserAvalible);
 router.post('/disableUser', userController.setUserDisable);
 router.post('/loginUser', userController.loginUser);
 router.post('/editUser', userController.editUser);
 router.post('/changePassword', userController.changePassword);
-router.get('/getApprovedUsers', userController.getApprovedUsers);
+router.post('/getApprovedUsers', userController.getApprovedUsers);
 router.post('/sendSuggestion', userController.sendSuggestion);
 router.post('/getUserById', userController.getUserById);
 router.post('/updateBalance', userController.updateBalanceAuto);
@@ -87,7 +87,7 @@ router.post('/userAnswers', UserSecurityQuestionController.getUserAnswers);
 
 //Loans
 router.post('/createLoan', LoanController.createLoan);
-router.get('/getLoans', LoanController.getLoans);
+router.post('/getLoans', LoanController.getLoans);
 router.post('/changeLoanState', LoanController.changeLoanState);
 router.post('/getLoansByUser', LoanController.getLoansByUser);
 router.post('/updateLoansAuto', LoanController.updateLoansAuto);
@@ -117,12 +117,12 @@ router.post('/getEducationById', EducationController.getEducationById);
 router.post('/updateEducation', EducationController.updateEducation);
 
 //Deductibles
-router.get('/deductibles', DeductibleController.getDeductibles);
+router.post('/deductibles', DeductibleController.getDeductibles);
 router.post('/editDeductible', DeductibleController.editDeductibleByType);
 router.post('/createDeductible', DeductibleController.createDeductible);
 
 //Institutions
-router.get('/institutions', InstitutionController.getInstitutions);
+router.post('/institutions', InstitutionController.getInstitutions);
 router.post('/updateInstitution', InstitutionController.updateInstitution);
 router.post('/createInstitution', InstitutionController.createInstitution);
 router.post('/getInstitutionById', InstitutionController.deleteInstitution);

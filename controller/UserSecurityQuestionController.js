@@ -7,7 +7,20 @@ const transporter = require('../utils/mailer');
 
 async function getUserQuestions(req, res){
     try{
-        const { user_ci } = req.body;
+        const { user_ci, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const user = await User.findOne( { where: { user_ci: user_ci } } );
         const userQuestions = await UserSecurityQuestion.findAll({ where: { user_id: user.user_id } });
         const questions = userQuestions.map( userQuestions => ({
@@ -21,7 +34,20 @@ async function getUserQuestions(req, res){
 
 async function getUserAnswers(req, res){
     try{
-        const { user_ci, user_answers_body } = req.body;
+        const { user_ci, user_answers_body, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const user = await User.findOne( { where: { user_ci: user_ci } } );
         const customer = await Customer.findOne( { where: { customer_id: user.customer_id} } );
         const userQuestions = await UserSecurityQuestion.findAll({ where: { user_id: user.user_id } });

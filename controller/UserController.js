@@ -4,6 +4,7 @@ const UserSecurityQuestion = require('../model/UserSecurityQuestion');
 const crypto = require('crypto');
 const { encrypt, decrypt } = require('../utils/encription');
 const transporter = require('../utils/mailer');
+const jwt = require('jsonwebtoken');
 
 async function createUserWithCustomer(req, res){
     try{
@@ -73,7 +74,20 @@ async function createUserWithCustomer(req, res){
 
 async function getUserById(req, res){
     try{
-        const { customer_id } = req.body;
+        const { customer_id, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const user = await User.findOne({ where: { user_id: customer_id } });
 
         if(!user){
@@ -88,6 +102,20 @@ async function getUserById(req, res){
 
 async function getApprovedUsers(req, res){
     try{
+        const { authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const users = await User.findAll( { where : { user_state: 1, user_role: 'usuario' } });
         const userIds = users.map(user => user.user_id);
 
@@ -110,6 +138,20 @@ async function getApprovedUsers(req, res){
 
 async function getPendingUsers(req, res){
     try{
+        const { authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const users = await User.findAll( { where : { user_state: 0, user_role: 'usuario' } });
         const userIds = users.map(user => user.user_id);
 
@@ -132,7 +174,20 @@ async function getPendingUsers(req, res){
 
 async function setUserAvalible(req, res){
     try{
-        const { user_id } = req.body;
+        const { user_id, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const user = await User.findOne({ where: { user_id: user_id } });
         
         if(!user){
@@ -161,7 +216,20 @@ async function setUserAvalible(req, res){
 
 async function setUserDisable(req, res){
     try{
-        const { user_id } = req.body;
+        const { user_id, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const user = await User.findOne({ where: { user_id: user_id } });
         
         if(!user){
@@ -193,6 +261,16 @@ async function loginUser(req, res){
     const userExist = await isUserAlreadyExist(user_ci);
     if(userExist){
         const user = await User.findOne( { where: { user_ci: user_ci } });
+        const userValidation = new User({
+            user_ci: user.user_ci,
+            user_password: user.user_password,
+            user_role: user.user_role
+        });
+        const userForToken = {
+            ci: userValidation.user_ci,
+            role: userValidation.user_role
+        };
+        const token = jwt.sign(userForToken, "awd", { expiresIn: '1h' });
         const customer = await Customer.findOne( { where: { customer_id: user.customer_id } });
         const newCustomer = {
             customer_id: customer.customer_id,
@@ -216,7 +294,7 @@ async function loginUser(req, res){
                 <a> ${code} </a>
                 `
             });
-            res.status(200).json({ success: true, user: user, customer: newCustomer, code, message: 'Inicio de sesión exitoso' });
+            res.status(200).json({ success: true, user: user, customer: newCustomer, code, token, message: 'Inicio de sesión exitoso' });
         }else{
             res.status(404).json({ success: false, error: user_password, message: 'Contraseña inválida' });
         }
@@ -228,6 +306,20 @@ async function loginUser(req, res){
 
 async function changePassword(req, res){
     try{
+        const { authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const { user_ci, user_password, user_new_password } = req.body;
         const user = await User.findOne({ where: { user_ci: user_ci } });
         
@@ -249,6 +341,20 @@ async function changePassword(req, res){
 
 async function editUser(req, res){
     try{
+        const { authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const { user_ci, 
             customer_personal_email, 
             customer_phone, 
@@ -313,7 +419,20 @@ async function sendSuggestion(req, res){
 
 async function editBalanceManually(req, res){
     try{
-        const { user_id, user_balance } = req.body;
+        const { user_id, user_balance, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
 
         const user = await User.findOne({ where: { user_id: user_id } });
         
@@ -334,7 +453,20 @@ async function editBalanceManually(req, res){
 
 async function updateBalanceAuto(req, res){
     try {
-        const { balance_json } = req.body;
+        const { balance_json, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const balanceToUpdate = balance_json;
 
         if(!balanceToUpdate){
@@ -358,7 +490,20 @@ async function updateBalanceAuto(req, res){
 
 async function updateFirstTime(req, res){
     try {
-        const { user_ci } = req.body;
+        const { user_ci, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const user = await User.findOne({ where: { user_ci: user_ci } });
         if(user){
             user.user_first_time = false;

@@ -2,6 +2,20 @@ const Deductible = require('../model/deductible');
 
 async function getDeductibles(req, res) {
     try {
+        const { authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const deductibles = await Deductible.findAll();
         res.status(200).json({ success: true, deductible: deductibles });
     } catch (error) {
@@ -11,7 +25,20 @@ async function getDeductibles(req, res) {
 
 async function editDeductibleByType(req, res) {
     try {
-        const { deductible_number, deductible_type } = req.body;
+        const { deductible_number, deductible_type, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
 
         const deductible = await Deductible.findOne({ where: { deductible_type: deductible_type } });
 
@@ -30,7 +57,20 @@ async function editDeductibleByType(req, res) {
 
 async function createDeductible(req, res) {
     try {
-        const { deductible_number, deductible_type } = req.body;
+        const { deductible_number, deductible_type, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
 
         const deductible = await Deductible.create({
             deductible_number,
