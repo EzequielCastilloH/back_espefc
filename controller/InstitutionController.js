@@ -2,7 +2,20 @@ const Institution = require('../model/Institution');
 
 async function createInstitution(req, res) {
     try {
-        const { institution_name } = req.body;
+        const { institution_name, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         await Institution.create({
             institution_name
         });
@@ -20,6 +33,20 @@ async function createInstitution(req, res) {
 
 async function getInstitutions(req, res) {
     try {
+        const { authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const institutions = await Institution.findAll();
         res.status(200).json({
             success: true,
@@ -37,8 +64,22 @@ async function updateInstitution(req, res) {
     try {
         const {
             institution_id,
-            institution_name
+            institution_name,
+            authorization
         } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         
         const institution = await Institution.findOne({ where: { institution_id: institution_id } });
 
@@ -67,8 +108,22 @@ async function updateInstitution(req, res) {
 async function deleteInstitution(req, res) {
     try {
         const {
-            institution_id
+            institution_id,
+            authorization
         } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
 
         const institution = await Institution.findOne({ where: { institution_id: institution_id } });
 

@@ -2,8 +2,20 @@ const Car = require('../model/Car');
 
 async function createCar(req, res) {
     try {
-        const { car_title, car_content, car_phrase } = req.body;
-
+        const { car_title, car_content, car_phrase, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         await Car.create({
             car_title,
             car_content,
@@ -29,6 +41,20 @@ async function getCars(req, res) {
 
 async function getCarById(req, res) {
     try {
+        const { authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const { car_id } = req.body;
         const cars = await Car.findOne({ where: { car_id: car_id } });
         res.status(200).json({ success: true, cars });
@@ -40,7 +66,20 @@ async function getCarById(req, res) {
 
 async function updateCar(req, res) {
     try {
-        const { car_id, car_title, car_content, car_phrase } = req.body;
+        const { car_id, car_title, car_content, car_phrase, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
 
         const cars = await Car.findOne({ where: { car_id: car_id } });
 

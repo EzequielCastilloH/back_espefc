@@ -14,7 +14,22 @@ async function createLoan(req, res) {
             loan_amortization_type,
             loan_pending_amount,
             loan_guarantors,
+            authorization
         } = req.body;
+
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
 
         const customer = await Customer.findOne({ where: { customer_id: user_id } });
         const loan_customer_name = customer.customer_name;
@@ -39,6 +54,20 @@ async function createLoan(req, res) {
 
 async function getLoans(req, res) {
     try {
+        const { authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const loans = await Loan.findAll();
         res.status(200).json({ success: true, loans });
     } catch (error) {
@@ -49,7 +78,20 @@ async function getLoans(req, res) {
 
 async function getLoansByUser(req, res) {
     try {
-        const { user_id } = req.body;
+        const { user_id, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const loans = await Loan.findAll({ where: { user_id: user_id } });
         res.status(200).json({ success: true, loans });
     } catch (error) {
@@ -60,7 +102,20 @@ async function getLoansByUser(req, res) {
 
 async function changeLoanState(req, res) {
     try {
-        const { loan_id, loan_state, loan_num } = req.body;
+        const { loan_id, loan_state, loan_num, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
 
         const loan = await Loan.findOne({ where: { loan_id: loan_id } });
 
@@ -121,7 +176,20 @@ async function changeLoanState(req, res) {
 
 async function updateLoansAuto(req, res) {
     try {
-        const { loan_json } = req.body;
+        const { loan_json, authorization } = req.body;
+        let token = '';
+        if(authorization && authorization.toLowerCase().startsWith('bearer')){
+            token = authorization.substring(7);
+        }
+        let decodedToken = {};
+        try{
+            decodedToken = jwt.verify(token, "awd");
+        }catch(error){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
+        if(!token || !decodedToken.ci){
+            return res.status(401).json({ success: false, message: 'Token inválido' });
+        }
         const loansToUpdate = loan_json;
 
         if (!loansToUpdate) {
