@@ -1,4 +1,5 @@
 const Institution = require('../model/Institution');
+const jwt = require('jsonwebtoken');
 
 async function createInstitution(req, res) {
     try {

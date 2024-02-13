@@ -1,4 +1,5 @@
 const CarVideo = require('../model/CarVideo');
+const jwt = require('jsonwebtoken');
 
 async function createCarVideo(req, res) {
     try {
@@ -46,6 +47,7 @@ async function getCarVideos(req, res) {
 
 async function getCarVideoByBrand(req, res) {
     try {
+        const { car_video_brand } = req.body;
         const car_videos = await CarVideo.findAll({ where: { car_video_brand: car_video_brand } });
         res.status(200).json({ success: true, car_videos });
     } catch (error) {

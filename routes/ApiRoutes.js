@@ -117,7 +117,7 @@ router.post('/getEducationById', EducationController.getEducationById);
 router.post('/updateEducation', EducationController.updateEducation);
 
 //Deductibles
-router.post('/deductibles', DeductibleController.getDeductibles);
+router.get('/deductibles', DeductibleController.getDeductibles);
 router.post('/editDeductible', DeductibleController.editDeductibleByType);
 router.post('/createDeductible', DeductibleController.createDeductible);
 

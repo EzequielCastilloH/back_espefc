@@ -3,6 +3,7 @@ const User = require('../model/User');
 const Customer = require('../model/Customer');
 const transporter = require('../utils/mailer');
 const { decrypt } = require('../utils/encription');
+const jwt = require('jsonwebtoken');
 
 async function createLoan(req, res) {
     try {
@@ -63,6 +64,7 @@ async function getLoans(req, res) {
         try{
             decodedToken = jwt.verify(token, "awd");
         }catch(error){
+            console.log(error);
             return res.status(401).json({ success: false, message: 'Token inválido' });
         }
         if(!token || !decodedToken.ci){
@@ -86,8 +88,12 @@ async function getLoansByUser(req, res) {
         let decodedToken = {};
         try{
             decodedToken = jwt.verify(token, "awd");
+            console.log("decode:",decodedToken);
         }catch(error){
+            console.log(error);
+            
             return res.status(401).json({ success: false, message: 'Token inválido' });
+            
         }
         if(!token || !decodedToken.ci){
             return res.status(401).json({ success: false, message: 'Token inválido' });
@@ -102,21 +108,7 @@ async function getLoansByUser(req, res) {
 
 async function changeLoanState(req, res) {
     try {
-        const { loan_id, loan_state, loan_num, authorization } = req.body;
-        let token = '';
-        if(authorization && authorization.toLowerCase().startsWith('bearer')){
-            token = authorization.substring(7);
-        }
-        let decodedToken = {};
-        try{
-            decodedToken = jwt.verify(token, "awd");
-        }catch(error){
-            return res.status(401).json({ success: false, message: 'Token inválido' });
-        }
-        if(!token || !decodedToken.ci){
-            return res.status(401).json({ success: false, message: 'Token inválido' });
-        }
-
+        const { loan_id, loan_state, loan_num } = req.body;
         const loan = await Loan.findOne({ where: { loan_id: loan_id } });
 
         if (!loan) {
@@ -176,20 +168,8 @@ async function changeLoanState(req, res) {
 
 async function updateLoansAuto(req, res) {
     try {
-        const { loan_json, authorization } = req.body;
-        let token = '';
-        if(authorization && authorization.toLowerCase().startsWith('bearer')){
-            token = authorization.substring(7);
-        }
-        let decodedToken = {};
-        try{
-            decodedToken = jwt.verify(token, "awd");
-        }catch(error){
-            return res.status(401).json({ success: false, message: 'Token inválido' });
-        }
-        if(!token || !decodedToken.ci){
-            return res.status(401).json({ success: false, message: 'Token inválido' });
-        }
+        const { loan_json} = req.body;
+        
         const loansToUpdate = loan_json;
 
         if (!loansToUpdate) {
