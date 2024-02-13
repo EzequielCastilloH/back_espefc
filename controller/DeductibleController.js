@@ -1,21 +1,9 @@
 const Deductible = require('../model/deductible');
+const jwt = require('jsonwebtoken');
 
 async function getDeductibles(req, res) {
     try {
-        const { authorization } = req.body;
-        let token = '';
-        if(authorization && authorization.toLowerCase().startsWith('bearer')){
-            token = authorization.substring(7);
-        }
-        let decodedToken = {};
-        try{
-            decodedToken = jwt.verify(token, "awd");
-        }catch(error){
-            return res.status(401).json({ success: false, message: 'Token inválido' });
-        }
-        if(!token || !decodedToken.ci){
-            return res.status(401).json({ success: false, message: 'Token inválido' });
-        }
+
         const deductibles = await Deductible.findAll();
         res.status(200).json({ success: true, deductible: deductibles });
     } catch (error) {

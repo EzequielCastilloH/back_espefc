@@ -4,67 +4,42 @@ const Customer = require('../model/Customer');
 const crypto = require('crypto');
 const { encrypt, decrypt } = require('../utils/encription');
 const transporter = require('../utils/mailer');
+const jwt = require('jsonwebtoken');
 
-async function getUserQuestions(req, res){
-    try{
-        const { user_ci, authorization } = req.body;
-        let token = '';
-        if(authorization && authorization.toLowerCase().startsWith('bearer')){
-            token = authorization.substring(7);
-        }
-        let decodedToken = {};
-        try{
-            decodedToken = jwt.verify(token, "awd");
-        }catch(error){
-            return res.status(401).json({ success: false, message: 'Token inválido' });
-        }
-        if(!token || !decodedToken.ci){
-            return res.status(401).json({ success: false, message: 'Token inválido' });
-        }
-        const user = await User.findOne( { where: { user_ci: user_ci } } );
+async function getUserQuestions(req, res) {
+    try {
+        const { user_ci } = req.body;
+        const user = await User.findOne({ where: { user_ci: user_ci } });
         const userQuestions = await UserSecurityQuestion.findAll({ where: { user_id: user.user_id } });
-        const questions = userQuestions.map( userQuestions => ({
+        const questions = userQuestions.map(userQuestions => ({
             question_id: userQuestions.question_id,
         }));
         res.json(questions);
-    }catch(error){
-        res.status(500).json({ success: false, message: 'Error al cargar las preguntas del usuario. '+ error });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error al cargar las preguntas del usuario. ' + error });
     }
 }
 
-async function getUserAnswers(req, res){
-    try{
-        const { user_ci, user_answers_body, authorization } = req.body;
-        let token = '';
-        if(authorization && authorization.toLowerCase().startsWith('bearer')){
-            token = authorization.substring(7);
-        }
-        let decodedToken = {};
-        try{
-            decodedToken = jwt.verify(token, "awd");
-        }catch(error){
-            return res.status(401).json({ success: false, message: 'Token inválido' });
-        }
-        if(!token || !decodedToken.ci){
-            return res.status(401).json({ success: false, message: 'Token inválido' });
-        }
-        const user = await User.findOne( { where: { user_ci: user_ci } } );
-        const customer = await Customer.findOne( { where: { customer_id: user.customer_id} } );
+async function getUserAnswers(req, res) {
+    try {
+        const { user_ci, user_answers_body } = req.body;
+        const user = await User.findOne({ where: { user_ci: user_ci } });
+        const customer = await Customer.findOne({ where: { customer_id: user.customer_id } });
         const userQuestions = await UserSecurityQuestion.findAll({ where: { user_id: user.user_id } });
-        const decryptedQuestions = userQuestions.map( userQuestions => ({
+        const decryptedQuestions = userQuestions.map(userQuestions => ({
             question_id: userQuestions.question_id,
-            user_answer: decrypt(userQuestions.user_answer),
+            user_answer: decrypt(userQuestions.user_answer).toLowerCase(),
         }));
-        const securityAnswers = user_answers_body.map( user_answers_body => ({
+        const securityAnswers = user_answers_body.map(user_answers_body => ({
             question_id: user_answers_body.question_id,
-            user_answer: user_answers_body.user_answer,
+            user_answer: user_answers_body.user_answer.toLowerCase(),
         }));
 
         const sonIguales = decryptedQuestions.every((dq, index) => {
             const sa = securityAnswers[index];
             return dq.question_id === sa.question_id && dq.user_answer === sa.user_answer;
         });
-    
+
         if (sonIguales) {
             const newPassword = encrypt(crypto.randomBytes(5).toString('hex'));
             user.user_password = newPassword;
@@ -86,8 +61,8 @@ async function getUserAnswers(req, res){
         } else {
             res.json({ success: false, message: 'Las respuestas no son iguales.' });
         }
-    }catch(error){
-        res.status(500).json({ success: false, message: 'Error al cargar las preguntas del usuario. '+ error });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Error al cargar las preguntas del usuario. ' + error });
     }
 }
 

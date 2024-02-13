@@ -1,4 +1,5 @@
 const New = require('../model/New');
+const jwt = require('jsonwebtoken');
 
 async function createNew(req, res) {
     try {

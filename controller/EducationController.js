@@ -1,4 +1,5 @@
 const Education = require('../model/education');
+const jwt = require('jsonwebtoken');
 
 async function createEducation(req, res) {
     try {

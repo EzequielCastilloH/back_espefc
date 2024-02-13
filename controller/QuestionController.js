@@ -1,5 +1,6 @@
 const Question = require('../model/Question');
 const User = require('../model/User');
+const jwt = require('jsonwebtoken');
 
 async function getAllQuestions(req, res){
     try{

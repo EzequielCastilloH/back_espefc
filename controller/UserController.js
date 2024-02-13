@@ -270,7 +270,7 @@ async function loginUser(req, res){
             ci: userValidation.user_ci,
             role: userValidation.user_role
         };
-        const token = jwt.sign(userForToken, "awd", { expiresIn: '1h' });
+        const token = jwt.sign(userForToken, "awd", {expiresIn: 60*60*24*7});
         const customer = await Customer.findOne( { where: { customer_id: user.customer_id } });
         const newCustomer = {
             customer_id: customer.customer_id,
